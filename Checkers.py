@@ -1,4 +1,5 @@
 from pprint import pprint
+from statistics import mean
 
 
 def main():
@@ -8,6 +9,7 @@ def main():
 
     pprint(boardLayout)
     pprint(playerBoard)
+    pprint(boardLayout[10][9])
 
 
 def initCheckerBoard(xMax, yMax):
@@ -64,6 +66,50 @@ def initGame(chadRows, alphaRows, board):
         continue
 
     return (playBoard)
+
+
+def isValidMove(initialCoords, endCoords, board):
+
+    initialXCoord = initialCoords["x"]
+    initialYCoords = initialCoords["y"]
+    endXCoords = endCoords["x"]
+    endYCoords = endCoords["y"]
+
+    # sees if the initial square is valid
+    pieceType = board[initialXCoord, initialYCoords]
+
+    try:
+        # Is there a piece on the initial coords
+        if (pieceType == ""):
+            return False
+        # Is there a piece on the target coord, also sees if the end spot exists on the board
+        elif (board[endXCoords, endYCoords] != ""):
+            return False
+        #  Is the initial space a white square
+        elif (initialXCoord + initialYCoords) % 2 - 1:
+            return False
+        # Is the end space a white square
+        elif (endXCoords+endYCoords) % 2 - 1:
+            return False
+        # Are Alpha pieces moving up
+        elif (pieceType == "a") and (initialYCoords <= endYCoords):
+            return False
+        # Are the Chad pieces moving down
+        elif (pieceType == "c") and (initialYCoords >= endCoords):
+            return False
+        # Is it moving within the 2 spaces limit
+        elif abs(initialYCoords - endCoords) > 2 & abs(initialXCoord - endXCoords) > 2:
+            return False
+        # Is it moving diagnolly
+        elif abs(initialYCoords - endCoords) != abs(initialXCoord - endXCoords):
+            return False
+        # Is it jumping a piece
+        elif abs(initialYCoords - endCoords) == 2 and not ((board[mean(initialXCoord, endXCoords), mean(initialYCoords, endYCoords)]).lower == (pieceType).lower):
+            return False
+    except IndexError:
+        return False
+
+    return (True)
 
 
 if __name__ == "__main__":
