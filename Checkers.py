@@ -1,19 +1,21 @@
 from pprint import pprint
 
+
 def main():
 
-    boardLayout = initCheckerBoard(9,9)
-    playerBoard = initGame(2,2, boardLayout)
+    boardLayout = initCheckerBoard(9, 9)
+    playerBoard = initGame(2, 2, boardLayout)
 
     pprint(boardLayout)
     pprint(playerBoard)
 
-# Makes a basic checker board using the specified diemensions
-def initCheckerBoard(xMax,yMax):
+
+def initCheckerBoard(xMax, yMax):
+    # Makes a basic checker board using the specified diemensions
     board = []
 
     for y in range(yMax):
-        curRow=[]
+        curRow = []
         for x in range(xMax):
 
             # Alternates between square colors, using the the row # to offset every other row.
@@ -26,20 +28,21 @@ def initCheckerBoard(xMax,yMax):
         # Inputs the new row into the board
         board.append(curRow)
 
-    return(board)
+    return (board)
 
-# Populates the board chips based upon the requested rows
+
 def initGame(chadRows, alphaRows, board):
 
-    # Errors out on if invalid inputs 
+    # Populates the board chips based upon the requested rows
+    # Errors out if invalid inputs
     if chadRows+alphaRows >= len(board) or chadRows < 1 or alphaRows < 1:
-        return(SystemError)
+        return (SystemError)
 
-    playBoard=[]
+    playBoard = []
     count = 0
 
     for row in board:
-        
+
         playrow = []
 
         if count < chadRows:
@@ -60,8 +63,8 @@ def initGame(chadRows, alphaRows, board):
         count = count + 1
         continue
 
-    return(playBoard)
+    return (playBoard)
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     main()
