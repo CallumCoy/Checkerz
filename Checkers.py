@@ -11,10 +11,10 @@ def main():
     validChads, validAlphas = initialValidMoves(
         chadCount, alphaCount, boardLayout)
 
-    pprint(boardLayout)
-    pprint(playerBoard)
-    pprint(validChads)
-    pprint(validAlphas)
+    printBoard(boardLayout)
+    printBoard(playerBoard)
+    printBoard(validChads)
+    printBoard(validAlphas)
 
 
 def initCheckerBoard(xMax, yMax):
@@ -75,20 +75,20 @@ def initGame(chadRows, alphaRows, board):
 
 def initialValidMoves(chadCount, alphaCount, board):
     # Makes two arrays that tracks valid moves for either side
-    validChads = [[None for _ in row] for row in board]
-    validAlpha = [[None for _ in row] for row in board]
+    validChads = [[0 for _ in row] for row in board]
+    validAlpha = [[0 for _ in row] for row in board]
 
     chadFrontline = chadCount
     alphaFrontline = len(board)-(alphaCount+1)
 
     for col in range(len(board[chadFrontline])):
         if board[chadFrontline][col] == "w":
-            validChads[chadFrontline][col] = True
+            validChads[chadFrontline][col] = 1
         continue
 
     for col in range(len(board[alphaFrontline])):
         if board[alphaFrontline][col] == "w":
-            validAlpha[alphaFrontline][col] = True
+            validAlpha[alphaFrontline][col] = 1
         continue
 
     return (validChads, validAlpha)
@@ -137,6 +137,16 @@ def isValidMove(initialCoords, endCoords, board):
 
     return (True)
 
+def printBoard(board):
+    lines = ["\n|\t"] 
+    
+    for row in board:
+         # Convert each element to string, using a blank space for empty cells(None)
+        line = '\t|\t'.join(str(cell) if cell is not None else '\t' for cell in row)
+        lines.append(line)
+        
+        # Join all lines into a single string with newline characters separating rows
+    print('\n|\t'.join(lines))
 
 if __name__ == "__main__":
     main()
