@@ -1,20 +1,30 @@
-from pprint import pprint
 from statistics import mean
+import numpy
+
+validChads = []
+validAlpha = []
+board = []
+playerboard = []
+
+chadCount = 2
+alphaCount = 2
 
 
 def main():
-    chadCount = 2
-    alphaCount = 2
 
-    boardLayout = initCheckerBoard(9, 9)
-    playerBoard = initGame(chadCount, alphaCount, boardLayout)
+    global board, playerBoard, validAlphas, validChads
+
+    board = initCheckerBoard(9, 9)
+    playerBoard = initGame(chadCount, alphaCount)
+
     validChads, validAlphas = initialValidMoves(
-        chadCount, alphaCount, boardLayout)
+        chadCount, alphaCount)
 
-    printBoard(boardLayout)
+    printBoard(board)
     printBoard(playerBoard)
     printBoard(validChads)
     printBoard(validAlphas)
+    print(int(True))
 
 
 def initCheckerBoard(xMax, yMax):
@@ -38,7 +48,7 @@ def initCheckerBoard(xMax, yMax):
     return (board)
 
 
-def initGame(chadRows, alphaRows, board):
+def initGame(chadRows, alphaRows):
 
     # Populates the board chips based upon the requested rows
     # Errors out if invalid inputs
@@ -73,13 +83,15 @@ def initGame(chadRows, alphaRows, board):
     return (playBoard)
 
 
-def initialValidMoves(chadCount, alphaCount, board):
+def initialValidMoves(chadCount, alphaCount):
     # Makes two arrays that tracks valid moves for either side
     validChads = [[0 for _ in row] for row in board]
     validAlpha = [[0 for _ in row] for row in board]
 
     chadFrontline = chadCount
     alphaFrontline = len(board)-(alphaCount+1)
+
+    print(board)
 
     for col in range(len(board[chadFrontline])):
         if board[chadFrontline][col] == "w":
@@ -94,12 +106,132 @@ def initialValidMoves(chadCount, alphaCount, board):
     return (validChads, validAlpha)
 
 
-def isValidMove(initialCoords, endCoords, board):
+def renewValidMoves(squareToCheck):
+    global validChads, validAlphas
 
-    initialXCoord = initialCoords["x"]
-    initialYCoords = initialCoords["y"]
-    endXCoords = endCoords["x"]
-    endYCoords = endCoords["y"]
+    # only need to check withing 2 squares of the changed squares
+    NormalMoves = [[1, 1], [-1, 1], [-1, -1], [1, -1]]
+    TakingMoves = [[2, 2], [-2, 2], [-2, -2], [2, -2]]
+
+    validChadMove = False
+    validAlphaMove = False
+
+    # Looks at surrounding pieces for possible moves
+    for square in MovingCoords:
+        # If both teams can move there we don't need to move there
+        if validAlphaMove and validChadMove:
+            break
+
+        # Catches and out of bounds moves we may try
+        try:
+            if board[square[0], square[1]] == "":
+                continue
+            elif board[square[0], square[1]] == "C":
+                validChadMove = True
+            elif board[square[0], square[1]] == "A":
+                validAlphaMove = True
+            elif board[square[0], square[1]] == "c" and square[1] < squareToCheck[1]:
+                validChadMove = True
+            elif board[square[0], square[1]] == "a" and square[1] > squareToCheck[1]:
+                validAlphaMove = True
+        except IndexError:
+            continue
+
+    # Changes to taking moves
+    MovingCoords = numpy.add(squareToCheck, TakingMoves)
+    middleSpot = numpy.divide(numpy.add(MovingCoords, squareToCheck), 2)
+
+    # Looking at surrounding squares
+    for square in MovingCoords:
+        # If both sides can move there no need to do so
+        if validAlphaMove and validChadMove:
+            break
+
+        # Catches any out of bounds movements we may check
+        try:
+            if board[square[0], square[1]] == "":
+                continue
+            elif board[square[0], square[1]] == "C" and board[middleSpot[0], middleSpot[1]].lower() == "a":
+                validChadMove = True
+            elif board[square[0], square[1]] == "A" and board[middleSpot[0], middleSpot[1]].lower() == "c":
+                validAlphaMove = True
+            elif board[square[0], square[1]] == "c" and square[1] < squareToCheck[1] and board[middleSpot[0], middleSpot[1]].lower() == "a":
+                validChadMove = True
+            elif board[square[0], square[1]] == "a" and square[1] > squareToCheck[1] and board[middleSpot[0], middleSpot[1]].lower() == "c":
+                validAlphaMove = True
+        except IndexError:
+            continue
+
+    # Updates the square if we can move there
+    validAlphas[MovingCoords[0], MovingCoords[1]] = int(validAlphaMove)
+    validChads[MovingCoords[0], MovingCoords[1]] = int(validChadMove)
+    return
+
+
+# Old code, may or may not use
+'''
+def pieceValidMoves(initialCoords, pieceType, board):
+
+    if pieceType != pieceType.lower():
+        movements = [[1, 1], [-1, 1], [-1, -1],
+            [1, -1], [2, 2], [-2, 2], [-2, -2], [2, -2]]
+    elif pieceType == "c":
+        movements = [[1, -1], [-1, -1], [2, -2], [-2, -2]]
+    elif pieceType == "a":
+        movements = [[1, 1], [-1, 1], [2, 2], [-2, 2]]
+    else:
+        return []
+
+    return [isValidMoveQuick(initialCoords,movements,pieceType,board)]
+
+
+def isValidMoveQuick(initialCoords, movement, pieceType, board):
+
+    validmoves = []
+
+    for coords in movement:
+
+        # Checks if it's in Range
+        try:
+            targetCoords = numpy.add(initialCoords,coords)
+
+            # Checks basic moves
+            if (abs(coords[0]) == 1):
+                    # If square is empty it is add it to the valid move list
+                    if board(targetCoords) == "":
+                        validmoves.append([targetCoords])
+            
+            # Check taking moves 
+            if (abs(coords[0]) == 2):
+                # Gets the middle coords
+                middleCoords = numpy.divide(numpy.add(initialCoords, targetCoords),2)
+
+                #Is their a valid piece between these pieces
+                if board[middleCoords[0],middleCoords[1]].lower() != pieceType.lower() and board[middleCoords[0],middleCoords[1]] != "":
+                    validmoves.append(targetCoords)
+                    
+                    nextMoves = []
+
+                    # Piece can keep taking pieces, so we extract the taking moves.  May remove in future in aid of taking one pieces at a time
+                    for move in movement:
+                        if abs(move[0]) == 2:
+                            nextMoves.append(move)
+                    
+                    validmoves.append(isValidMoveQuick(targetCoords, nextMoves, board))
+             
+        except IndexError:
+            continue
+
+                    
+'''
+
+
+def isValidMove(initialCoords, endCoords):
+
+    initialXCoord = initialCoords[0]
+    initialYCoords = initialCoords[1]
+    endXCoords = endCoords[0]
+    endYCoords = endCoords[1]
 
     # sees if the initial square is valid
     pieceType = board[initialXCoord, initialYCoords]
@@ -137,16 +269,19 @@ def isValidMove(initialCoords, endCoords, board):
 
     return (True)
 
-def printBoard(board):
-    lines = ["\n|\t"] 
-    
-    for row in board:
-         # Convert each element to string, using a blank space for empty cells(None)
-        line = '\t|\t'.join(str(cell) if cell is not None else '\t' for cell in row)
+
+def printBoard(inputtedBoard):
+    lines = ["\n|\t"]
+
+    for row in inputtedBoard:
+        # Convert each element to string, using a blank space for empty cells(None)
+        line = '\t|\t'.join(
+            str(cell) if cell is not None else '\t' for cell in row)
         lines.append(line)
-        
+
         # Join all lines into a single string with newline characters separating rows
     print('\n|\t'.join(lines))
+
 
 if __name__ == "__main__":
     main()
