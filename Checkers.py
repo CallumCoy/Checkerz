@@ -3,13 +3,18 @@ from statistics import mean
 
 
 def main():
+    chadCount = 2
+    alphaCount = 2
 
     boardLayout = initCheckerBoard(9, 9)
-    playerBoard = initGame(2, 2, boardLayout)
+    playerBoard = initGame(chadCount, alphaCount, boardLayout)
+    validChads, validAlphas = initialValidMoves(
+        chadCount, alphaCount, boardLayout)
 
     pprint(boardLayout)
     pprint(playerBoard)
-    pprint(boardLayout[10][9])
+    pprint(validChads)
+    pprint(validAlphas)
 
 
 def initCheckerBoard(xMax, yMax):
@@ -66,6 +71,27 @@ def initGame(chadRows, alphaRows, board):
         continue
 
     return (playBoard)
+
+
+def initialValidMoves(chadCount, alphaCount, board):
+    # Makes two arrays that tracks valid moves for either side
+    validChads = [[None for _ in row] for row in board]
+    validAlpha = [[None for _ in row] for row in board]
+
+    chadFrontline = chadCount
+    alphaFrontline = len(board)-(alphaCount+1)
+
+    for col in range(len(board[chadFrontline])):
+        if board[chadFrontline][col] == "w":
+            validChads[chadFrontline][col] = True
+        continue
+
+    for col in range(len(board[alphaFrontline])):
+        if board[alphaFrontline][col] == "w":
+            validAlpha[alphaFrontline][col] = True
+        continue
+
+    return (validChads, validAlpha)
 
 
 def isValidMove(initialCoords, endCoords, board):
