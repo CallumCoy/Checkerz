@@ -273,13 +273,29 @@ def isValidMove(initialCoords, endCoords):
 def printBoard(inputtedBoard):
     lines = ["\n|\t"]
 
+    # index elements
+    count = len(inputtedBoard)
+    xIndex = [chr(val+97) for val in range(len(inputtedBoard[0]))]
+
+
     for row in inputtedBoard:
-        # Convert each element to string, using a blank space for empty cells(None)
+        # Place yIndex at the front of each line.
+        editedRow = [str(count)]
+        for element in row: editedRow.append(element)
+        
+        # Convert each element to string, using a blank space for empty cells(None).
         line = '\t|\t'.join(
-            str(cell) if cell is not None else '\t' for cell in row)
+            str(cell) if cell is not None else '\t' for cell in editedRow)
         lines.append(line)
 
-        # Join all lines into a single string with newline characters separating rows
+        count -= 1
+
+    # Adds x index to the table.
+    line = '\t|\t' + '\t|\t'.join(
+        str(cell) if cell is not None else '\t' for cell in xIndex)
+    lines.append(line)
+
+    # Join all lines into a single string with newline characters separating rows.
     print('\n|\t'.join(lines))
 
 
