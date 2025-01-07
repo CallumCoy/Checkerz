@@ -1,10 +1,14 @@
 from statistics import mean
+import time
 import numpy
 
 validChads = []
 validAlpha = []
 board = []
 playerboard = []
+player1 = ""
+acceptableChads = ["yes", "y", "a", "alpha", "ye", "yeah"]
+acceptableAlpha = ["no", "n", "c", "chad", "nay", "nee"]
 
 chadCount = 2
 alphaCount = 2
@@ -25,6 +29,37 @@ def main():
     printBoard(validChads)
     printBoard(validAlphas)
     print(int(True))
+
+
+def playGame():
+    global player1
+
+    for i in range[4]:
+        # Ask for players prefered type
+        response = input("Are you a Chad or on an Alpha?")
+
+        # Checks if they responded correctly
+        if response in acceptableAlpha or response in acceptableChads:
+            if response in acceptableAlpha:
+                player1 = "Alpha"
+            else:
+                player1 = "Chad"
+            break
+
+        # After 3 fails pretent to stop
+        if i == 2:
+            print("Whelp pleasure meeting you, but we're closing shop now.")
+            time.sleep(60)  # Wait a minute
+            print("Wait you're still here, I'll give you another chance then.")
+
+        # After 4 fails pretend to pretend to stop
+        elif i == 3:
+            print(
+                "You really messed it up this time we're closing up for real this time.")
+            time.sleep(70)  # Wait 70 seconds
+            print("no its real this time Sigma")
+            time.sleep(3600)  # Wait an hour before closing
+            exit()
 
 
 def initCheckerBoard(xMax, yMax):
