@@ -116,6 +116,9 @@ def renewValidMoves(squareToCheck):
     validChadMove = False
     validAlphaMove = False
 
+    # sets up basic moves
+    MovingCoords = numpy.add(squareToCheck, NormalMoves)
+
     # Looks at surrounding pieces for possible moves
     for square in MovingCoords:
         # If both teams can move there we don't need to move there
