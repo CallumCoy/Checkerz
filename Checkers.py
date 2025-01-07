@@ -229,6 +229,36 @@ def isValidMoveQuick(initialCoords, movement, pieceType, board):
 '''
 
 
+def movePiece(initialCoords, endcoords):
+
+    global playerBoard
+
+    player = playerBoard[initialCoords[0], initialCoords[1]]
+
+    #  Check if it is a valid move
+    if not isValidMove(initialCoords, endcoords):
+        return "Fail"  # Move was invalid request new move
+
+    # Kings the corrisponding pieces
+    if endcoords[1] == 0 and player == "a":
+        player = "A"
+    elif endcoords[1] == len(playerBoard)-1 and player == "c":
+        player = "C"
+
+    # Clears old space and moves the piece
+    playerBoard[initialCoords[0], initialCoords[1]] = ""
+    playerBoard[endcoords[0], endcoords[1]] = player
+
+    # Checks if it was a taking move if so remove taken piece and send request for next turn. TODO add piece counter to find end game.
+    if abs(initialCoords[0]-endcoords[0]) == 2:
+        takenSpot = numpy.add(initialCoords, endcoords)/2
+        # Could set to "x" to prevent backpeddling
+        playerBoard[takenSpot[0], takenSpot[1]] = ""
+        return "Taken"
+    else:
+        return "Next"
+
+
 def isValidMove(initialCoords, endCoords):
 
     initialXCoord = initialCoords[0]
@@ -280,12 +310,12 @@ def printBoard(inputtedBoard):
     count = len(inputtedBoard)
     xIndex = [chr(val+97) for val in range(len(inputtedBoard[0]))]
 
-
     for row in inputtedBoard:
         # Place yIndex at the front of each line.
         editedRow = [str(count)]
-        for element in row: editedRow.append(element)
-        
+        for element in row:
+            editedRow.append(element)
+
         # Convert each element to string, using a blank space for empty cells(None).
         line = '\t|\t'.join(
             str(cell) if cell is not None else '\t' for cell in editedRow)
