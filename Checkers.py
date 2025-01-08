@@ -1,14 +1,17 @@
+import re
 from statistics import mean
 import time
 import numpy
 
-validChads = []
+invalidChads = []
 validAlpha = []
 board = []
 playerboard = []
 player1 = ""
 acceptableChads = ["yes", "y", "a", "alpha", "ye", "yeah"]
 acceptableAlpha = ["no", "n", "c", "chad", "nay", "nee"]
+chadSoldiers = 0
+alphaSoldiers = 0
 
 chadCount = 2
 alphaCount = 2
@@ -16,19 +19,21 @@ alphaCount = 2
 
 def main():
 
-    global board, playerBoard, validAlphas, validChads
+    global board, playerBoard, validAlphas, invalidChads
 
     board = initCheckerBoard(9, 9)
     playerBoard = initGame(chadCount, alphaCount)
 
-    validChads, validAlphas = initialValidMoves(
+    invalidChads, validAlphas = initialValidMoves(
         chadCount, alphaCount)
 
     printBoard(board)
     printBoard(playerBoard)
-    printBoard(validChads)
+    printBoard(invalidChads)
     printBoard(validAlphas)
     print(int(True))
+
+# TODO split up this section
 
 
 def playGame():
@@ -61,6 +66,46 @@ def playGame():
             time.sleep(3600)  # Wait an hour before closing
             exit()
 
+    print("Ofcourse I should have known, you look like a true " +
+          player1 + ".  and like a true " + player1 + " I will let you go first")
+
+    curPlayer = player1
+
+    while chadCount > 0 and alphaCount > 0:
+
+        printBoard(playerBoard)
+
+        coords = input("It is " + curPlayer +
+                       "'s turn, please state which piece you would like to move and to where in the following format |A1 B2| (capitilization doe not matter)")
+
+        invalidCoords = True
+
+        while invalidCoords:
+            invalidCoords, initialCoords, endCoords = splitCoords()
+
+
+def splitCoords(coords):
+    # Makes everything lowercase
+    modifiedCoords = coords.lower()
+
+    # Checks if the coords are in a valid format
+    if not re.search("[0-9]+[a-z] [0-9]+[a-z]", modifiedCoords):
+        print("Invalid input please try again.")
+        return (False, [], [])
+
+    # Seperates numbers from letters
+    ycoords = re.findall("[0-9]+", modifiedCoords)-1
+    alphabets = re.findall("[a-z]+", modifiedCoords)
+
+    # Extra processing for letter to number
+    xcoords = [(ord(letter)-ord("a")) for letter in alphabets]
+
+    # combine into coordinates
+    initialCoords = [xcoords[0], ycoords[0]]
+    endCoords = [xcoords[1], ycoords[1]]
+
+    return (True, initialCoords, endCoords)
+
 
 def initCheckerBoard(xMax, yMax):
     # Makes a basic checker board using the specified diemensions
@@ -82,19 +127,24 @@ def initCheckerBoard(xMax, yMax):
 
     return (board)
 
+# TODO Comment up this function
+
 
 def initGame(chadRows, alphaRows):
 
     # Populates the board chips based upon the requested rows
     # Errors out if invalid inputs
     if chadRows+alphaRows >= len(board) or chadRows < 1 or alphaRows < 1:
-        return (SystemError)
+        return ([])
+
+    global chadSoldiers, alphaSoldiers
 
     playBoard = []
     count = 0
 
     for row in board:
 
+        checkerCount = 0
         playrow = []
 
         if count < chadRows:
@@ -106,10 +156,16 @@ def initGame(chadRows, alphaRows):
 
         for square in row:
             if square == "w":
+                checkerCount += 1
                 playrow.append(inputCar)
             else:
                 playrow.append("")
             continue
+
+        if inputCar == "c":
+            chadCount = + checkerCount
+        else:
+            alphaSoldiers = + checkerCount
 
         playBoard.append(playrow)
         count = count + 1
@@ -142,7 +198,7 @@ def initialValidMoves(chadCount, alphaCount):
 
 
 def renewValidMoves(squareToCheck):
-    global validChads, validAlphas
+    global invalidChads, validAlphas
 
     # only need to check withing 2 squares of the changed squares
     NormalMoves = [[1, 1], [-1, 1], [-1, -1], [1, -1]]
@@ -202,7 +258,7 @@ def renewValidMoves(squareToCheck):
 
     # Updates the square if we can move there
     validAlphas[MovingCoords[0], MovingCoords[1]] = int(validAlphaMove)
-    validChads[MovingCoords[0], MovingCoords[1]] = int(validChadMove)
+    invalidChads[MovingCoords[0], MovingCoords[1]] = int(validChadMove)
     return
 
 
