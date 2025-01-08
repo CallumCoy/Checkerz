@@ -4,7 +4,7 @@ import time
 import numpy
 
 invalidChads = []
-validAlpha = []
+validAlphas = []
 board = []
 playerboard = []
 player1 = ""
@@ -147,6 +147,7 @@ def initGame(chadRows, alphaRows):
         checkerCount = 0
         playrow = []
 
+        # Sets tha character that will fill the slots as the squares are processed
         if count < chadRows:
             inputCar = "c"
         elif count < len(board) - alphaRows:
@@ -155,6 +156,7 @@ def initGame(chadRows, alphaRows):
             inputCar = "a"
 
         for square in row:
+            # Only white squares are valid for differnt charaters
             if square == "w":
                 checkerCount += 1
                 playrow.append(inputCar)
@@ -162,8 +164,9 @@ def initGame(chadRows, alphaRows):
                 playrow.append("")
             continue
 
+        #Adds the pices so the game knows how many pieces are in play
         if inputCar == "c":
-            chadCount = + checkerCount
+            chadSoldiers = + checkerCount
         else:
             alphaSoldiers = + checkerCount
 
@@ -176,25 +179,27 @@ def initGame(chadRows, alphaRows):
 
 def initialValidMoves(chadCount, alphaCount):
     # Makes two arrays that tracks valid moves for either side
+    global validChads, validAlphas
+    
     validChads = [[0 for _ in row] for row in board]
-    validAlpha = [[0 for _ in row] for row in board]
+    validAlphas = [[0 for _ in row] for row in board]
 
     chadFrontline = chadCount
     alphaFrontline = len(board)-(alphaCount+1)
 
-    print(board)
-
+    # Goes through the spaces infront of the chads checker pieces, acknowledging white spaces as the only valid space
     for col in range(len(board[chadFrontline])):
         if board[chadFrontline][col] == "w":
             validChads[chadFrontline][col] = 1
         continue
 
+    # Goes through the spaces infront of the alpha checker pieces, acknowledging white spaces as the only valid space
     for col in range(len(board[alphaFrontline])):
         if board[alphaFrontline][col] == "w":
-            validAlpha[alphaFrontline][col] = 1
+            validAlphas[alphaFrontline][col] = 1
         continue
 
-    return (validChads, validAlpha)
+    return (validChads, validAlphas)
 
 
 def renewValidMoves(squareToCheck):
@@ -322,7 +327,7 @@ def isValidMoveQuick(initialCoords, movement, pieceType, board):
 
 def movePiece(initialCoords, endcoords):
 
-    global playerBoard
+    global playerBoard, chadSoldiers, alphaSoldiers
 
     player = playerBoard[initialCoords[0], initialCoords[1]]
 
@@ -340,11 +345,18 @@ def movePiece(initialCoords, endcoords):
     playerBoard[initialCoords[0], initialCoords[1]] = ""
     playerBoard[endcoords[0], endcoords[1]] = player
 
-    # Checks if it was a taking move if so remove taken piece and send request for next turn. TODO add piece counter to find end game.
+    # Checks if it was a taking move if so remove taken piece and send request for next turn.
     if abs(initialCoords[0]-endcoords[0]) == 2:
         takenSpot = numpy.add(initialCoords, endcoords)/2
         # Could set to "x" to prevent backpeddling
         playerBoard[takenSpot[0], takenSpot[1]] = ""
+
+        #adjust score after a take
+        if player.lower() == "c":
+            alphaSoldiers =- 1
+        else:
+            chadSoldiers =-1
+
         return "Taken"
     else:
         return "Next"
