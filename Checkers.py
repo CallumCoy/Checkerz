@@ -8,6 +8,7 @@ validAlphas = []
 board = []
 playerboard = []
 player1 = ""
+player2 = ""
 acceptableChads = ["yes", "y", "a", "alpha", "ye", "yeah"]
 acceptableAlpha = ["no", "n", "c", "chad", "nay", "nee"]
 chadSoldiers = 0
@@ -37,7 +38,7 @@ def main():
 
 
 def playGame():
-    global player1
+    global player1 player2
 
     for i in range[4]:
         # Ask for players prefered type
@@ -47,8 +48,10 @@ def playGame():
         if response in acceptableAlpha or response in acceptableChads:
             if response in acceptableAlpha:
                 player1 = "Alpha"
+                player2 = "Chad"
             else:
                 player1 = "Chad"
+                player2 = "Alpha"
             break
 
         # After 3 fails pretent to stop
@@ -76,12 +79,37 @@ def playGame():
         printBoard(playerBoard)
 
         coords = input("It is " + curPlayer +
-                       "'s turn, please state which piece you would like to move and to where in the following format |A1 B2| (capitilization doe not matter)")
+                       "'s turn, please state which piece you would like to move and to where in the following format |A1 B2| (capitilization doe not matter): ")
 
         invalidCoords = True
+        moving = "Move"
 
-        while invalidCoords:
-            invalidCoords, initialCoords, endCoords = splitCoords()
+        while moving:
+            while invalidCoords:
+                invalidCoords, initialCoords, endCoords = splitCoords(coords)
+
+                if invalidCoords:
+                    coords = input("Invalid text, please try again: ")
+
+            moving = movePiece(initialCoords, endCoords, moving)
+
+            if moving != "Fail":
+                renewValidMoves(initialCoords)
+                renewValidMoves(endCoords)
+            else:
+                coords = input("This move is an invalid")
+
+            if moving == "Taken":
+                renewValidMoves(numpy.add(initialCoords, endCoords)/2)
+                coords = input(
+                    "We have taken out an enemy, you can try capturing another enemy or end your turn with 'end': ")
+                if coords.lower() == "end":
+                    break
+
+        if curPlayer == player1:
+            curPlayer == player2
+        else:
+            curPlayer == player1
 
 
 def splitCoords(coords):
@@ -91,7 +119,7 @@ def splitCoords(coords):
     # Checks if the coords are in a valid format
     if not re.search("[0-9]+[a-z] [0-9]+[a-z]", modifiedCoords):
         print("Invalid input please try again.")
-        return (False, [], [])
+        return (True, [], [])
 
     # Seperates numbers from letters
     ycoords = re.findall("[0-9]+", modifiedCoords)-1
@@ -104,7 +132,7 @@ def splitCoords(coords):
     initialCoords = [xcoords[0], ycoords[0]]
     endCoords = [xcoords[1], ycoords[1]]
 
-    return (True, initialCoords, endCoords)
+    return (False, initialCoords, endCoords)
 
 
 def initCheckerBoard(xMax, yMax):
@@ -164,7 +192,7 @@ def initGame(chadRows, alphaRows):
                 playrow.append("")
             continue
 
-        #Adds the pices so the game knows how many pieces are in play
+        # Adds the pices so the game knows how many pieces are in play
         if inputCar == "c":
             chadSoldiers = + checkerCount
         else:
@@ -180,7 +208,7 @@ def initGame(chadRows, alphaRows):
 def initialValidMoves(chadCount, alphaCount):
     # Makes two arrays that tracks valid moves for either side
     global validChads, validAlphas
-    
+
     validChads = [[0 for _ in row] for row in board]
     validAlphas = [[0 for _ in row] for row in board]
 
@@ -324,8 +352,10 @@ def isValidMoveQuick(initialCoords, movement, pieceType, board):
                     
 '''
 
+# TODO enforce take only moves
 
-def movePiece(initialCoords, endcoords):
+
+def movePiece(initialCoords, endcoords, moveType):
 
     global playerBoard, chadSoldiers, alphaSoldiers
 
@@ -351,15 +381,15 @@ def movePiece(initialCoords, endcoords):
         # Could set to "x" to prevent backpeddling
         playerBoard[takenSpot[0], takenSpot[1]] = ""
 
-        #adjust score after a take
+        # adjust score after a take
         if player.lower() == "c":
-            alphaSoldiers =- 1
+            alphaSoldiers = - 1
         else:
-            chadSoldiers =-1
+            chadSoldiers = -1
 
         return "Taken"
     else:
-        return "Next"
+        return ""
 
 
 def isValidMove(initialCoords, endCoords):
