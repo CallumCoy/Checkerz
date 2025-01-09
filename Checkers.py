@@ -28,11 +28,7 @@ def main():
     invalidChads, validAlphas = initialValidMoves(
         chadCount, alphaCount)
 
-    printBoard(board)
-    printBoard(playerBoard)
-    printBoard(invalidChads)
-    printBoard(validAlphas)
-    print(int(True))
+    playGame()
 
 # TODO split up this section
 
@@ -163,8 +159,6 @@ def initCheckerBoard(xMax, yMax):
         board.append(curRow)
 
     return (board)
-
-# TODO Comment up this function
 
 
 def initGame(chadRows, alphaRows):
@@ -361,8 +355,6 @@ def isValidMoveQuick(initialCoords, movement, pieceType, board):
                     
 '''
 
-# TODO enforce take only moves
-
 
 def movePiece(initialCoords, endcoords, moveType):
 
@@ -371,7 +363,7 @@ def movePiece(initialCoords, endcoords, moveType):
     player = playerBoard[initialCoords[0], initialCoords[1]]
 
     #  Check if it is a valid move
-    if not isValidMove(initialCoords, endcoords):
+    if not isValidMove(initialCoords, endcoords) or (moveType == "Taken" and abs(initialCoords[0]-endcoords[0]) != 2):
         return "Fail"  # Move was invalid request new move
 
     # Kings the corrisponding pieces
