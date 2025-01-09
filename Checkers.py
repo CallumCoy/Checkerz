@@ -38,7 +38,7 @@ def main():
 
 
 def playGame():
-    global player1 player2
+    global player1, player2
 
     for i in range[4]:
         # Ask for players prefered type
