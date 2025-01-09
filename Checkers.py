@@ -6,11 +6,11 @@ import numpy
 invalidChads = []
 validAlphas = []
 board = []
-playerboard = []
+playerBoard = []
 player1 = ""
 player2 = ""
 acceptableChads = ["yes", "y", "a", "alpha", "ye", "yeah"]
-acceptableAlpha = ["no", "n", "c", "chad", "nay", "nee"]
+acceptableAlphas = ["no", "n", "c", "chad", "nay", "nee"]
 chadSoldiers = 0
 alphaSoldiers = 0
 
@@ -36,13 +36,13 @@ def main():
 def playGame():
     global player1, player2
 
-    for i in range[4]:
+    for i in range(4):
         # Ask for players prefered type
         response = input("Are you a Chad or on an Alpha?")
 
         # Checks if they responded correctly
-        if response in acceptableAlpha or response in acceptableChads:
-            if response in acceptableAlpha:
+        if response in acceptableAlphas or response in acceptableChads:
+            if response in acceptableAlphas:
                 player1 = "Alpha"
                 player2 = "Chad"
             else:
@@ -78,12 +78,12 @@ def playGame():
                        "'s turn, please state which piece you would like to move and to where in the following format |A1 B2| (capitilization doe not matter): ")
 
         # Setting up some variables for the upcoming while loops
-        invalidCoords = True
         moving = "Move"
 
         # When Move = "end" the turn is other, otherwise continue on
         while moving.lower() != "end":
             # Keep trying to get a valid coord
+            invalidCoords = True
             while invalidCoords:
                 invalidCoords, initialCoords, endCoords = splitCoords(coords)
 
@@ -122,20 +122,20 @@ def splitCoords(coords):
     modifiedCoords = coords.lower()
 
     # Checks if the coords are in a valid format
-    if not re.search("[0-9]+[a-z] [0-9]+[a-z]", modifiedCoords):
+    if not re.search("[a-z][0-9]+ [a-z][0-9]+", modifiedCoords):
         print("Invalid input please try again.")
         return (True, [], [])
 
     # Seperates numbers from letters
-    ycoords = re.findall("[0-9]+", modifiedCoords)-1
-    alphabets = re.findall("[a-z]+", modifiedCoords)
+    ycoords = re.findall("[0-9]+", modifiedCoords)
+    alphabets = re.findall("[a-z]", modifiedCoords)
 
     # Extra processing for letter to number
     xcoords = [(ord(letter)-ord("a")) for letter in alphabets]
 
-    # combine into coordinates
-    initialCoords = [xcoords[0], ycoords[0]]
-    endCoords = [xcoords[1], ycoords[1]]
+    # combine into coordinates, array is backwards, and y is reversed
+    initialCoords = [9-int(ycoords[0]),xcoords[0]]
+    endCoords = [9-int(ycoords[1]),xcoords[1]]
 
     return (False, initialCoords, endCoords)
 
@@ -254,15 +254,15 @@ def renewValidMoves(squareToCheck):
 
         # Catches and out of bounds moves we may try
         try:
-            if board[square[0], square[1]] == "":
+            if board[square[0]][square[1]] == "":
                 continue
-            elif board[square[0], square[1]] == "C":
+            elif board[square[0]][square[1]] == "C":
                 validChadMove = True
-            elif board[square[0], square[1]] == "A":
+            elif board[square[0]][square[1]] == "A":
                 validAlphaMove = True
-            elif board[square[0], square[1]] == "c" and square[1] < squareToCheck[1]:
+            elif board[square[0]][square[1]] == "c" and square[1] < squareToCheck[1]:
                 validChadMove = True
-            elif board[square[0], square[1]] == "a" and square[1] > squareToCheck[1]:
+            elif board[square[0]][square[1]] == "a" and square[1] > squareToCheck[1]:
                 validAlphaMove = True
         except IndexError:
             continue
@@ -279,22 +279,22 @@ def renewValidMoves(squareToCheck):
 
         # Catches any out of bounds movements we may check
         try:
-            if board[square[0], square[1]] == "":
+            if board[square[0]][square[1]] == "":
                 continue
-            elif board[square[0], square[1]] == "C" and board[middleSpot[0], middleSpot[1]].lower() == "a":
+            elif board[square[0]][square[1]] == "C" and board[middleSpot[0]][middleSpot[1]].lower() == "a":
                 validChadMove = True
-            elif board[square[0], square[1]] == "A" and board[middleSpot[0], middleSpot[1]].lower() == "c":
+            elif board[square[0]][square[1]] == "A" and board[middleSpot[0]][middleSpot[1]].lower() == "c":
                 validAlphaMove = True
-            elif board[square[0], square[1]] == "c" and square[1] < squareToCheck[1] and board[middleSpot[0], middleSpot[1]].lower() == "a":
+            elif board[square[0]][square[1]] == "c" and square[1] < squareToCheck[1] and board[middleSpot[0]][middleSpot[1]].lower() == "a":
                 validChadMove = True
-            elif board[square[0], square[1]] == "a" and square[1] > squareToCheck[1] and board[middleSpot[0], middleSpot[1]].lower() == "c":
+            elif board[square[0]][square[1]] == "a" and square[1] > squareToCheck[1] and board[middleSpot[0]][middleSpot[1]].lower() == "c":
                 validAlphaMove = True
         except IndexError:
             continue
 
     # Updates the square if we can move there
-    validAlphas[MovingCoords[0], MovingCoords[1]] = int(validAlphaMove)
-    invalidChads[MovingCoords[0], MovingCoords[1]] = int(validChadMove)
+    validAlphas[MovingCoords[0]][MovingCoords[1]] = int(validAlphaMove)
+    invalidChads[MovingCoords[0]][MovingCoords[1]] = int(validChadMove)
     return
 
 
@@ -360,7 +360,8 @@ def movePiece(initialCoords, endcoords, moveType):
 
     global playerBoard, chadSoldiers, alphaSoldiers
 
-    player = playerBoard[initialCoords[0], initialCoords[1]]
+    print(initialCoords)    
+    player = playerBoard[initialCoords[0]][initialCoords[1]]
 
     #  Check if it is a valid move
     if not isValidMove(initialCoords, endcoords) or (moveType == "Taken" and abs(initialCoords[0]-endcoords[0]) != 2):
@@ -373,14 +374,14 @@ def movePiece(initialCoords, endcoords, moveType):
         player = "C"
 
     # Clears old space and moves the piece
-    playerBoard[initialCoords[0], initialCoords[1]] = ""
-    playerBoard[endcoords[0], endcoords[1]] = player
+    playerBoard[initialCoords[0]][initialCoords[1]] = ""
+    playerBoard[endcoords[0]][endcoords[1]] = player
 
     # Checks if it was a taking move if so remove taken piece and send request for next turn.
     if abs(initialCoords[0]-endcoords[0]) == 2:
         takenSpot = numpy.add(initialCoords, endcoords)/2
         # Could set to "x" to prevent backpeddling
-        playerBoard[takenSpot[0], takenSpot[1]] = ""
+        playerBoard[takenSpot[0]][takenSpot[1]] = ""
 
         # adjust score after a take
         if player.lower() == "c":
@@ -401,20 +402,20 @@ def isValidMove(initialCoords, endCoords):
     endYCoords = endCoords[1]
 
     # sees if the initial square is valid
-    pieceType = board[initialXCoord, initialYCoords]
+    pieceType = playerBoard[initialXCoord][initialYCoords]
 
     try:
         # Is there a piece on the initial coords
         if (pieceType == ""):
             return False
         # Is there a piece on the target coord, also sees if the end spot exists on the board
-        elif (board[endXCoords, endYCoords] != ""):
+        elif (playerBoard[endXCoords][endYCoords] != ""):
             return False
         #  Is the initial space a white square
-        elif (initialXCoord + initialYCoords) % 2 - 1:
+        elif board[endXCoords][endYCoords] == "b":
             return False
         # Is the end space a white square
-        elif (endXCoords+endYCoords) % 2 - 1:
+        elif board[endXCoords][endYCoords] == "b":
             return False
         # Are Alpha pieces moving up
         elif (pieceType == "a") and (initialYCoords <= endYCoords):
@@ -423,13 +424,13 @@ def isValidMove(initialCoords, endCoords):
         elif (pieceType == "c") and (initialYCoords >= endCoords):
             return False
         # Is it moving within the 2 spaces limit
-        elif abs(initialYCoords - endCoords) > 2 & abs(initialXCoord - endXCoords) > 2:
+        elif abs(initialYCoords - endYCoords) > 2 & abs(initialXCoord - endXCoords) > 2:
             return False
-        # Is it moving diagnolly
-        elif abs(initialYCoords - endCoords) != abs(initialXCoord - endXCoords):
+        # Is it moving diagnollychad
+        elif abs(initialYCoords - endYCoords) != abs(initialXCoord - endXCoords):
             return False
         # Is it jumping a piece
-        elif abs(initialYCoords - endCoords) == 2 and not ((board[mean(initialXCoord, endXCoords), mean(initialYCoords, endYCoords)]).lower == (pieceType).lower):
+        elif abs(initialYCoords - endYCoords) == 2 and not ((board[mean(initialXCoord, endXCoords)][mean(initialYCoords, endYCoords)]).lower == (pieceType).lower):
             return False
     except IndexError:
         return False
