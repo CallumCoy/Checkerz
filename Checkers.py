@@ -76,36 +76,45 @@ def playGame():
 
     while chadCount > 0 and alphaCount > 0:
 
+        # Prints the board and asks for the players move
         printBoard(playerBoard)
-
         coords = input("It is " + curPlayer +
                        "'s turn, please state which piece you would like to move and to where in the following format |A1 B2| (capitilization doe not matter): ")
 
+        # Setting up some variables for the upcoming while loops
         invalidCoords = True
         moving = "Move"
 
-        while moving:
+        # When Move = "end" the turn is other, otherwise continue on
+        while moving.lower() != "end":
+            # Keep trying to get a valid coord
             while invalidCoords:
                 invalidCoords, initialCoords, endCoords = splitCoords(coords)
 
                 if invalidCoords:
                     coords = input("Invalid text, please try again: ")
 
+            # Actually implement the move
             moving = movePiece(initialCoords, endCoords, moving)
 
+            # If move was successful update two of the locations, otherwise ask for valid coords
             if moving != "Fail":
                 renewValidMoves(initialCoords)
                 renewValidMoves(endCoords)
             else:
-                coords = input("This move is an invalid")
+                coords = input(
+                    "This move is invalid, please provide another two coordinates")
 
+            # If the move took a unit update the missing spot, and ask for the next coords or if they end.
             if moving == "Taken":
                 renewValidMoves(numpy.add(initialCoords, endCoords)/2)
+                printBoard(playerBoard)
                 coords = input(
                     "We have taken out an enemy, you can try capturing another enemy or end your turn with 'end': ")
                 if coords.lower() == "end":
-                    break
+                    moving = "end"
 
+        # Swaps the players
         if curPlayer == player1:
             curPlayer == player2
         else:
@@ -389,7 +398,7 @@ def movePiece(initialCoords, endcoords, moveType):
 
         return "Taken"
     else:
-        return ""
+        return "End"
 
 
 def isValidMove(initialCoords, endCoords):
