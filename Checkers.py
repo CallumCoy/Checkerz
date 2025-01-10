@@ -122,7 +122,7 @@ def splitCoords(coords):
     modifiedCoords = coords.lower()
 
     # Checks if the coords are in a valid format
-    if not re.search("[a-z][0-9]+ [a-z][0-9]+", modifiedCoords):
+    if not re.search("[a-z][1-9]+ [a-z][1-9]+", modifiedCoords):
         print("Invalid input please try again.")
         return (True, [], [])
 
