@@ -267,6 +267,10 @@ def renewValidMoves(squareToCheck):
         except IndexError:
             continue
 
+        # Updates the square if we can move there
+        validAlphas[square[0]][square[1]] = int(validAlphaMove)
+        invalidChads[square[0]][square[1]] = str(int(validChadMove))
+
     # Changes to taking moves
     MovingCoords = numpy.add(squareToCheck, TakingMoves)
     middleSpot = numpy.divide(numpy.add(MovingCoords, squareToCheck), 2)
@@ -292,9 +296,9 @@ def renewValidMoves(squareToCheck):
         except IndexError:
             continue
 
-    # Updates the square if we can move there
-    validAlphas[MovingCoords[0]][MovingCoords[1]] = int(validAlphaMove)
-    invalidChads[MovingCoords[0]][MovingCoords[1]] = int(validChadMove)
+        # Updates the square if we can move there
+        validAlphas[square[0]][square[1]] = int(validAlphaMove)
+        invalidChads[square[0]][square[1]] = str(int(validChadMove))
     return
 
 
