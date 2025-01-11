@@ -112,9 +112,9 @@ def playGame():
 
         # Swaps the players
         if curPlayer == player1:
-            curPlayer == player2
+            curPlayer = player2
         else:
-            curPlayer == player1
+            curPlayer = player1
 
 
 def splitCoords(coords):
