@@ -122,7 +122,7 @@ def splitCoords(coords):
     modifiedCoords = coords.lower()
 
     # Checks if the coords are in a valid format
-    if not re.search("[a-z][1-9]+ [a-z][1-9]+", modifiedCoords):
+    if not re.search("[a-i][1-9]+ [a-i][1-9]+", modifiedCoords):
         print("Invalid input please try again.")
         return (True, [], [])
 
@@ -372,9 +372,9 @@ def movePiece(initialCoords, endcoords, moveType):
         return "Fail"  # Move was invalid request new move
 
     # Kings the corrisponding pieces
-    if endcoords[1] == 0 and player == "a":
+    if endcoords[0] == 0 and player == "a":
         player = "A"
-    elif endcoords[1] == len(playerBoard)-1 and player == "c":
+    elif endcoords[0] == len(playerBoard)-1 and player == "c":
         player = "C"
 
     # Clears old space and moves the piece
@@ -400,10 +400,10 @@ def movePiece(initialCoords, endcoords, moveType):
 
 def isValidMove(initialCoords, endCoords):
 
-    initialXCoord = initialCoords[0]
-    initialYCoords = initialCoords[1]
-    endXCoords = endCoords[0]
-    endYCoords = endCoords[1]
+    initialXCoord = initialCoords[1]
+    initialYCoords = initialCoords[0]
+    endXCoords = endCoords[1]
+    endYCoords = endCoords[0]
 
     # sees if the initial square is valid
     pieceType = playerBoard[initialXCoord][initialYCoords]
@@ -413,19 +413,19 @@ def isValidMove(initialCoords, endCoords):
         if (pieceType == ""):
             return False
         # Is there a piece on the target coord, also sees if the end spot exists on the board
-        elif (playerBoard[endXCoords][endYCoords] != ""):
+        elif (playerBoard[endYCoords][endXCoords] != ""):
             return False
         #  Is the initial space a white square
-        elif board[endXCoords][endYCoords] == "b":
+        elif board[endYCoords][endXCoords] == "b":
             return False
         # Is the end space a white square
-        elif board[endXCoords][endYCoords] == "b":
+        elif board[endYCoords][endXCoords] == "b":
             return False
         # Are Alpha pieces moving up
-        elif (pieceType == "a") and (initialYCoords <= endYCoords):
+        elif (pieceType == "a") and (initialYCoords >= endYCoords):
             return False
         # Are the Chad pieces moving down
-        elif (pieceType == "c") and (initialYCoords >= endCoords):
+        elif (pieceType == "c") and (initialYCoords <= endYCoords):
             return False
         # Is it moving within the 2 spaces limit
         elif abs(initialYCoords - endYCoords) > 2 & abs(initialXCoord - endXCoords) > 2:
