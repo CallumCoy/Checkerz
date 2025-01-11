@@ -406,7 +406,7 @@ def isValidMove(initialCoords, endCoords):
     endYCoords = endCoords[0]
 
     # sees if the initial square is valid
-    pieceType = playerBoard[initialXCoord][initialYCoords]
+    pieceType = playerBoard[initialYCoords][initialXCoord]
 
     try:
         # Is there a piece on the initial coords
@@ -422,10 +422,10 @@ def isValidMove(initialCoords, endCoords):
         elif board[endYCoords][endXCoords] == "b":
             return False
         # Are Alpha pieces moving up
-        elif (pieceType == "a") and (initialYCoords >= endYCoords):
+        elif (pieceType == "a") and (initialYCoords <= endYCoords):
             return False
         # Are the Chad pieces moving down
-        elif (pieceType == "c") and (initialYCoords <= endYCoords):
+        elif (pieceType == "c") and (initialYCoords >= endYCoords):
             return False
         # Is it moving within the 2 spaces limit
         elif abs(initialYCoords - endYCoords) > 2 & abs(initialXCoord - endXCoords) > 2:
