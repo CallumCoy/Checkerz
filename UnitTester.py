@@ -2,7 +2,75 @@ import Checkers
 
 
 def main():
-    checksplitCoords()
+    # checksplitCoords()
+    checkinitCheckerBoard()
+
+
+def checkinitCheckerBoard():
+
+    passCount = 0
+    failCount = 0
+
+    unitTests = [
+        {"test": [10, 9], "result":
+         [["w", "b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ]},
+        {"test": [9, 9], "result":
+         [["w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ["b", "w", "b", "w", "b", "w", "b", "w", "b"],
+          ["w", "b", "w", "b", "w", "b", "w", "b", "w"],
+          ]},
+        {"test": [4, 4], "result": [
+            ["w", "b", "w", "b"],
+            ["b", "w", "b", "w"],
+            ["w", "b", "w", "b"],
+            ["b", "w", "b", "w"],
+        ]}]
+
+    print("Testing function initCheckerBoard, it takes in a string, and returns a array continine a booleon value and 2 cooridnates.  Their are " +
+          str(len(unitTests)) + " tests.")
+
+    # Runs each unit test
+    for unitTest in unitTests:
+        # Runs the function and tracks the returned value
+        funcResult = Checkers.initCheckerBoard(
+            unitTest["test"][0], unitTest["test"][1])
+
+        # Tracks if it passed or failed
+        if funcResult == unitTest["result"]:
+            result = "Passed"
+            passCount += 1
+        else:
+            result = "Failed"
+            failCount += 1
+
+        # Test results
+        print("\nTest result: " + str(result) +
+              "\nInputted: " + str(unitTest["test"]) +
+              "\nThe function returned: " + str(funcResult) +
+              "\nThe expected result was: " + str(unitTest["result"]) +
+              "\n------------------------------------------------------------------")
+
+    # Summerise function results
+    print('\n*********************************************************************' +
+          '\nTesting of InitCheckerBoard function complete.' +
+          '\nOf the ' + str(len(unitTests)) + " tests " + str(passCount) + " test/s passed and " + str(failCount) + " test/s failed.")
+
+    return failCount
 
 
 def checksplitCoords():
@@ -13,8 +81,8 @@ def checksplitCoords():
     unitTests = [
         {"test": "a1 a1", "result": (False, [8, 0], [8, 0])},
         {"test": "A1 I6", "result": (False, [8, 0], [3, 8])},
-        {"test": "a9 i9", "result": (False, [0,0], [0, 8])},
-        {"test": "a1 a2 a3", "result": (False, [8,0], [7,0])},
+        {"test": "a9 i9", "result": (False, [0, 0], [0, 8])},
+        {"test": "a1 a2 a3", "result": (False, [8, 0], [7, 0])},
         {"test": "9i 9a", "result": (True, [], [])},
         {"test": "a1a1", "result": (True, [], [])},
         {"test": "4 a2", "result": (True, [], [])},
@@ -39,7 +107,7 @@ def checksplitCoords():
         else:
             result = "Failed"
             failCount += 1
-        
+
         # Test results
         print("\nTest result: " + str(result) +
               "\nInputted: " + str(unitTest["test"]) +
@@ -53,6 +121,7 @@ def checksplitCoords():
           '\nOf the ' + str(len(unitTests)) + " tests " + str(passCount) + " test/s passed and " + str(failCount) + " test/s failed.")
 
     return failCount
+
 
 if __name__ == "__main__":
     main()
