@@ -74,9 +74,10 @@ def playGame():
 
         # Setting up some variables for the upcoming while loops
         moving = "Move"
+        moveTaken = False
 
         # When Move = "end" the turn is other, otherwise continue on
-        while moving.lower() != "end" and moveTaken:
+        while moving.lower() != "end" and not moveTaken:
             # Keep trying to get a valid coord
             invalidCoords = True
             while invalidCoords:
@@ -190,9 +191,9 @@ def initGame(chadRows, alphaRows):
 
         # Adds the pices so the game knows how many pieces are in play
         if inputCar == "c":
-            chadSoldiers = + checkerCount
-        else:
-            alphaSoldiers = + checkerCount
+            chadSoldiers += checkerCount
+        elif inputCar == "a":
+            alphaSoldiers += checkerCount
 
         playBoard.append(playrow)
         count = count + 1
@@ -228,9 +229,9 @@ def movePiece(initialCoords, endcoords, moveType):
 
         # adjust score after a take
         if player.lower() == "c":
-            alphaSoldiers = - 1
+            alphaSoldiers -= 1
         else:
-            chadSoldiers = -1
+            chadSoldiers -= 1
 
         return "Taken"
     else:
@@ -250,7 +251,7 @@ def isValidMove(initialCoords, endCoords):
 
     try:
         # Is there a piece on the initial coords
-        if (pieceType == ""):
+        if (pieceType.lower() != curPlayer[0].lower()):
             return False
         # Is there a piece on the target coord, also sees if the end spot exists on the board
         elif (playerBoard[endYCoords][endXCoords] != ""):
@@ -274,7 +275,7 @@ def isValidMove(initialCoords, endCoords):
         elif abs(initialYCoords - endYCoords) != abs(initialXCoord - endXCoords):
             return False
         # Is it jumping a piece
-        elif abs(initialYCoords - endYCoords) == 2 and ((playerBoard[int((initialXCoord+endXCoords)/2)][int((initialYCoords+endYCoords)/2)]).lower() == (apposingType).lower()):
+        elif abs(initialYCoords - endYCoords) == 2 and playerBoard[int((initialYCoords+endYCoords)/2)][int((initialXCoord+endXCoords)/2)].lower() != (apposingType).lower():
             return False
     except IndexError:
         return False
