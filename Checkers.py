@@ -7,6 +7,7 @@ invalidChads = []
 validAlphas = []
 board = []
 playerBoard = []
+curPlayer = ""
 player1 = ""
 player2 = ""
 acceptableChads = ["yes", "y", "a", "alpha", "ye", "yeah"]
@@ -34,7 +35,7 @@ def main():
 
 
 def playGame():
-    global player1, player2
+    global player1, player2, curPlayer
 
     for i in range(4):
         # Ask for players prefered type
@@ -43,10 +44,10 @@ def playGame():
         # Checks if they responded correctly
         if response in acceptableAlphas or response in acceptableChads:
             if response in acceptableAlphas:
-                player1 = "Alpha"
+                player1 = curPlayer = "Alpha"
                 player2 = "Chad"
             else:
-                player1 = "Chad"
+                player1 = curPlayer = "Chad"
                 player2 = "Alpha"
             break
 
@@ -68,9 +69,7 @@ def playGame():
     print("Ofcourse I should have known, you look like a true " +
           player1 + ".  and like a true " + player1 + " I will let you go first")
 
-    curPlayer = player1
-
-    while chadCount > 0 and alphaCount > 0:
+    while chadSoldiers > 0 and alphaSoldiers > 0:
 
         # Prints the board and asks for the players move
         printBoard(playerBoard)
@@ -81,7 +80,7 @@ def playGame():
         moving = "Move"
 
         # When Move = "end" the turn is other, otherwise continue on
-        while moving.lower() != "end":
+        while moving.lower() != "end" and moveTaken:
             # Keep trying to get a valid coord
             invalidCoords = True
             while invalidCoords:
@@ -95,11 +94,12 @@ def playGame():
 
             # If move was successful update two of the locations, otherwise ask for valid coords
             if moving != "Fail":
+                moveTaken = True
                 renewValidMoves(initialCoords)
                 renewValidMoves(endCoords)
             else:
                 coords = input(
-                    "This move is invalid, please provide another two coordinates")
+                    "This move is invalid, please provide another two coordinates: ")
 
             # If the move took a unit update the missing spot, and ask for the next coords or if they end.
             if moving == "Taken":
@@ -134,8 +134,8 @@ def splitCoords(coords):
     xcoords = [(ord(letter)-ord("a")) for letter in alphabets]
 
     # combine into coordinates, array is backwards, and y is reversed
-    initialCoords = [9-int(ycoords[0]),xcoords[0]]
-    endCoords = [9-int(ycoords[1]),xcoords[1]]
+    initialCoords = [9-int(ycoords[0]), xcoords[0]]
+    endCoords = [9-int(ycoords[1]), xcoords[1]]
 
     return (False, initialCoords, endCoords)
 
@@ -286,10 +286,10 @@ def renewValidMoves(squareToCheck):
 
         # Catches any out of bounds movements we may check
         try:
-            
+
             xCoord = int(square[1])
             yCoord = int(square[0])
-            
+
             if board[yCoord][xCoord] == "":
                 continue
             elif board[yCoord][xCoord] == "C" and board[middleSpot[0]][middleSpot[1]].lower() == "a":
@@ -305,7 +305,7 @@ def renewValidMoves(squareToCheck):
 
         # Updates the square if we can move there
         validAlphas[yCoord][xCoord] = int(validAlphaMove)
-        invalidChads[yCoord][xCoord] = str(int(validChadMove))
+        invalidChads[yCoord][xCoord] = int(validChadMove)
     return
 
 
@@ -371,7 +371,6 @@ def movePiece(initialCoords, endcoords, moveType):
 
     global playerBoard, chadSoldiers, alphaSoldiers
 
-    print(initialCoords)    
     player = playerBoard[initialCoords[0]][initialCoords[1]]
 
     #  Check if it is a valid move
@@ -442,7 +441,7 @@ def isValidMove(initialCoords, endCoords):
         elif abs(initialYCoords - endYCoords) != abs(initialXCoord - endXCoords):
             return False
         # Is it jumping a piece
-        elif abs(initialYCoords - endYCoords) == 2 and ((playerBoard[int((initialXCoord+endXCoords)/2)][int((initialYCoords+endYCoords)/2)]).lower == (pieceType).lower):
+        elif abs(initialYCoords - endYCoords) == 2 and ((playerBoard[int((initialXCoord+endXCoords)/2)][int((initialYCoords+endYCoords)/2)]).lower() == (apposingType).lower()):
             return False
     except IndexError:
         return False
